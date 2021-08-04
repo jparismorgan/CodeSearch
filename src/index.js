@@ -89,10 +89,6 @@ async function main() {
     // were done unfortunately.
     // See https://github.com/nextapps-de/flexsearch/issues/99
 
-    console.log('----')
-    console.log(title)
-    console.log(q)
-
     // Split on higlight term and include term into parts, ignore case.
     const words = q.trim().toLowerCase().split(/[ ,]+/)
     console.log(title, q, words)
@@ -136,7 +132,7 @@ async function main() {
   function createElementFromHTML(htmlString) {
     var div = document.createElement('div')
     div.innerHTML = htmlString
-    console.log('div.innerHTML:', div.innerHTML)
+    // console.log('div.innerHTML:', div.innerHTML)
 
     // Change this to div.childNodes to support multiple top-level nodes
     // return div.firstChild;
@@ -157,20 +153,17 @@ async function main() {
       entry = childs[i]
 
       if (!entry) {
-        // entry = document.createElement('div')
-        entry = createElementFromHTML(
-          // HighlightMatch(tagIdToLine[results[i]], value)
-          highlight(tagIdToLine[results[i]], value)
-        )
-        console.log(entry)
+        entry = document.createElement('div')
+        // entry = createElementFromHTML(
+        // // HighlightMatch(tagIdToLine[results[i]], value)
+        // highlight(tagIdToLine[results[i]], value)
+        // )
         suggestions.appendChild(entry)
       }
 
-      // entry.textContent = tagIdToLine[results[i]];
-      entry = createElementFromHTML(
-        // HighlightMatch(tagIdToLine[results[i]], value)
-        highlight(tagIdToLine[results[i]], value)
-      )
+      // entry.textContent = tagIdToLine[results[i]]
+      entry.innerHTML = HighlightMatch(tagIdToLine[results[i]], value)
+      // highlight(tagIdToLine[results[i]], value)
     }
 
     while (childs.length > len) {
