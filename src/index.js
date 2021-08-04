@@ -58,6 +58,19 @@ async function main() {
 
   // HighlightMatch('test string', 't')
 
+  function createElementFromHTML(htmlString) {
+    var div = document.createElement('div')
+    div.innerHTML = htmlString
+    // console.log('div.innerHTML:', div.innerHTML)
+
+    // Change this to div.childNodes to support multiple top-level nodes
+    // return div.firstChild;
+    return div
+  }
+
+  // suggestions.appendChild(createElementFromHTML(HighlightMatch('<test>', '<t')))
+  suggestions.appendChild(createElementFromHTML(highlight('test<?test>', 't')))
+
   function highlight(content, keyword) {
     // const keyword = 'audio';
     // const content = '&lt;audio&gt;: The Embed Audio element'
@@ -72,11 +85,11 @@ async function main() {
     // const resContent = content.replace(regexForContent, '<em>$&</em>');
     const resContent = content.replace(regexForContent, '<mark>$&</mark>')
 
-    // console.log("----");
-    // console.log('keyword: ', keyword);
-    // console.log('content: ', content);
-    // console.log('sanitizedKeyword: ', sanitizedKeyword);
-    // console.log('resContent: ', resContent);
+    console.log('----')
+    console.log('keyword: ', keyword)
+    console.log('content: ', content)
+    console.log('sanitizedKeyword: ', sanitizedKeyword)
+    console.log('resContent: ', resContent)
 
     return resContent
 
@@ -129,16 +142,6 @@ async function main() {
     // )
   }
 
-  function createElementFromHTML(htmlString) {
-    var div = document.createElement('div')
-    div.innerHTML = htmlString
-    // console.log('div.innerHTML:', div.innerHTML)
-
-    // Change this to div.childNodes to support multiple top-level nodes
-    // return div.firstChild;
-    return div
-  }
-
   function show_results() {
     console.log('[show_results] value: ', this.value)
     var value = this.value
@@ -161,8 +164,8 @@ async function main() {
         suggestions.appendChild(entry)
       }
 
-      // entry.textContent = tagIdToLine[results[i]]
-      entry.innerHTML = HighlightMatch(tagIdToLine[results[i]], value)
+      entry.textContent = tagIdToLine[results[i]]
+      // entry.innerHTML = HighlightMatch(tagIdToLine[results[i]], value)
       // highlight(tagIdToLine[results[i]], value)
     }
 
