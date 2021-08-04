@@ -1,0 +1,80 @@
+<!-- OUTER WEBSITE: body.html is the outer page. -->
+<header class="grid-container">
+  <div class="grid-item" style="padding-right: 1em">
+    <img src="../assets/outer-iframe/menu-icon.svg">
+  </div>
+  
+  <div class="grid-item">
+    <h1>The 8th Wall Times</h1>
+  </div>
+  
+  <div class="grid-item" style="padding-left: 1em">
+    <img src="../assets/outer-iframe/profile-icon.svg">
+  </div>
+</header>
+
+<div class="content">
+  <h1>Volcano Erupts in WebAR</h1>
+  
+  <p class="author">By Scott A Lister</p>
+  
+  <!-- time stamp -->
+  <p id="date"><br></p>
+  
+  <p>
+  In a volcanic eruption, lava, volcanic bombs and ash, and various gases are expelled from a 
+  volcanic vent and fissure. While many eruptions only pose dangers to the immediately surrounding
+  area, Earth's largest eruptions can have a major regional or even global impact, with some
+  affecting the climate and contributing to mass extinctions. Volcanic eruptions can generally be
+  characterized as either explosive eruptions, sudden ejections of rock and ash, or effusive
+  eruptions, relatively gentle outpourings of lava. Explosive eruptions usually involve thick,
+  highly viscous, silicic or felsic magma, high in volatiles like water vapor and carbon dioxide.
+  Pyroclastic materials are the primary product, typically in the form of tuff.
+  </p>
+  
+  <p>
+  These volcanic materials spew from the volcano in the form of a pyroclastic flow. According to
+  Wikipedia, a pyroclastic flow (also known as a pyroclastic density current or a pyroclastic cloud)
+  is a fast-moving current of hot gas and volcanic matter (collectively known as tephra) that moves
+  away from a volcano about 100 km/h (62 mph) on average but is capable of reaching speeds up to 700
+  km/h (430 mph).
+  </p> 
+</div>
+
+<!-- AR iframe -->
+<div id="inline-ar">
+  <button id="startBtn" onClick="startAR()">
+    <img src="../assets/outer-iframe/start-ar-banner.svg">
+  </button>
+  <div id="iframeControls">
+    <button id="expandBtn" onClick="toggleFullscreen()">
+      <div id="expandImg"></div>
+    </button>
+    <button id="stopBtn" onClick="stopAR()">
+      <div id="stopImg"></div>
+    </button>
+  </div>
+  <iframe
+    id="my-iframe"
+    allow="camera;microphone;gyroscope;accelerometer;">
+  </iframe>
+</div>
+
+<div class="content">
+  <p>
+  The most notorious pyroclastic flow known to geological history belongs to O'Shea Jackson, known 
+  professionally by his stage name Ice Cube. After decades honing his lyrical skills on the mic,
+  Ice Cube defined the gangsta rap genre by pushing hip-hop culture into the mainstream through
+  both N.W.A and various solo projects. According to Jackson, a pyroclastic flow "[is] what happens
+  when a volcano blow, [it is] what happens when Ice Cube starts to flow. Red hot lava mixed with
+  saliva, pulverising everything in its wake. Nothing can survive a pyroclastic flow, and no one
+  will survive this one".
+  </p>
+  
+  <p>
+  This proclamation was made on his eighth studio album, "Raw Footage", debuting at number 5 on the 
+  Billboard 200, with first-week sales reaching 70,000 copies in the United States in 2008. In its 
+  second week of release the Album ranked on #8 on the Billboard 200 with 63,000 copies more sold. 
+  As of 2016 the album sold 713,500 copies in the United States and 925,000 copies Worldwide. 
+  </p>
+</div>

@@ -1,0 +1,57 @@
+<a-scene
+  xrextras-stats
+  xrextras-gesture-detector
+  xrextras-almost-there
+  xrextras-loading
+  xrextras-runtime-error
+  renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;"
+  xrweb>
+
+  <!-- We can define assets here to be loaded when A-Frame initializes -->
+  <a-assets>
+    <!-- Credit to Poly by Google for the model: https://poly.google.com/view/5ZMAz7_ucTn -->
+    <a-asset-item id="sandCastleModel" src="../assets/manipulate/sand-castle.glb"></a-asset-item>
+  </a-assets>
+
+  <!-- The raycaster will emit mouse events on scene objects specified with the cantap class -->
+  <a-camera
+    id="camera"
+    position="0 8 8"
+    raycaster="objects: .cantap"
+    cursor="fuse: false; rayOrigin: mouse;">
+  </a-camera>
+
+  <a-entity
+    light="type: directional;
+           intensity: 1.2;
+           castShadow: true;
+           shadowMapHeight:2048;
+           shadowMapWidth:2048;
+           shadowCameraTop: 10;
+           target: #sandcastle;"
+    xrextras-attach="target: sandcastle; offset: 3 15 3;"
+    shadow>
+  </a-entity>
+
+  <a-light type="ambient" intensity="0.65"></a-light>
+
+  <a-entity 
+    id="sandcastle"
+    gltf-model="#sandCastleModel"
+    xrextras-hold-drag 
+    xrextras-two-finger-rotate 
+    xrextras-pinch-scale 
+    scale="0.025 0.025 0.025"
+    shadow="cast: true">
+  </a-entity>
+
+  <a-entity
+    id="ground"
+    class="cantap"
+    geometry="primitive: box"
+    material="shader: shadow; transparent: true; opacity: 0.4"
+    scale="1000 2 1000"
+    position="0 -1 0"
+    shadow="cast: false">
+  </a-entity>
+</a-scene>
