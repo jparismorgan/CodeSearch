@@ -43,6 +43,7 @@ async function main() {
   fileNameToContent[file1Name] = file1
   fileNameToContent[file2Name] = file2
   const fileNameToTag = {}
+  const tagToFileName = {}
   const tagIdToLine = {}
   let i = 0
   Object.entries(fileNameToContent).forEach(([fileName, content]) => {
@@ -50,6 +51,7 @@ async function main() {
     if (!tag) {
       fileNameToTag[fileName] = i++
       tag = fileNameToTag[fileName]
+      tagToFileName[tag] = fileName
     }
     let id = 0
     content.split('\n').forEach((line) => {
@@ -189,13 +191,20 @@ async function main() {
         suggestions.appendChild(entry)
       }
 
-      const file
+      // const tagId = `${tag}-${id++}`
+
+      const tag = results[i].split('-')[0]
+      const id = results[i].split('-')[1]
       entry.textContent = tagIdToLine[results[i]]
       // entry.innerHTML =
       //   // HighlightMatch(tagIdToLine[results[i]], value)
       //   highlight(tagIdToLine[results[i]], value)
       var instance = new Mark(entry)
       instance.mark(value)
+
+      entry.innerHTML =
+        entry.innerHTML +
+        `<br/><b><i>file: ${tagToFileName[tag]}, line ${id}</b></i>`
     }
 
     while (childs.length > len) {
