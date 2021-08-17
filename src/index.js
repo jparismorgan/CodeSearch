@@ -58,9 +58,9 @@ async function main() {
     // charset: 'latin:advanced',
     tokenize: 'full',
     cache: 100,
-    threshold: 10,
-    resolution: 20, // 9 is default
-    depth: 0,
+    threshold: 0,
+    resolution: 9, // 9 is default
+    // depth: 0,
     // context: {
     //   depth: 2,
     //   resolution: 5,
@@ -71,8 +71,12 @@ async function main() {
     // https://github.com/nextapps-de/flexsearch/issues/197
     // https://github.com/nextapps-de/flexsearch/issues/145
     encode: function (str) {
+      const s = str.toLowerCase().split(/(\s+)/)
+      console.log(s)
+      return s
       // return str.split(/\s+/g)
-      return str //.toLowerCase()
+      // str.split(/(\s+)/);
+      // return str //.toLowerCase()
     }
   })
   const fileNameToContent = {}
@@ -93,7 +97,7 @@ async function main() {
     content.split('\n').forEach((line) => {
       const tagId = `${tag}-${id++}`
       tagIdToLine[tagId] = line
-      // console.log(tagId, line)
+      // console.log(tagId, line) // paris debug
       index.add(tagId, line)
     })
   })
