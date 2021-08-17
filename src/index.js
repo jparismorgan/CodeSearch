@@ -58,7 +58,7 @@ async function main() {
     // charset: 'latin:advanced',
     tokenize: 'full',
     cache: 100,
-    threshold: 0,
+    // threshold: 1,
     resolution: 9, // 9 is default
     // depth: 0,
     // context: {
