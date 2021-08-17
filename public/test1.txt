@@ -1,231 +1,494 @@
-<a-scene
-  xrextras-stats
-  xrextras-gesture-detector
-  xrextras-almost-there
-  xrextras-loading
-  xrextras-runtime-error
-  renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;"
-  xrweb>
+/// ///////////////////////////////// AFRAME
 
-  <!-- We can define assets here to be loaded when A-Frame initializes -->
-  <a-assets>
-    <!-- Credit to Poly by Google for the model: https://poly.google.com/view/5ZMAz7_ucTn -->
-    <a-asset-item id="sandCastleModel" src="../assets/manipulate/sand-castle.glb"></a-asset-item>
-  </a-assets>
+// // Copyright (c) 2019 8th Wall, Inc.
+// //
+// // app.js is the main entry point for your 8th Wall app. Code here will execute after head.html
+// // is loaded, and before body.html is loaded.
 
-  <!-- The raycaster will emit mouse events on scene objects specified with the cantap class -->
-  <a-camera
-    id="camera"
-    position="0 8 8"
-    raycaster="objects: .cantap"
-    cursor="fuse: false; rayOrigin: mouse;">
-  </a-camera>
+// import curvedMeshComponent from './extras/curved-mesh'
+// import overrideImageTargetsComponent from './extras/override-image-targets'
 
-  <a-entity
-    light="type: directional;
-           intensity: 1.2;
-           castShadow: true;
-           shadowMapHeight:2048;
-           shadowMapWidth:2048;
-           shadowCameraTop: 10;
-           target: #sandcastle;"
-    xrextras-attach="target: sandcastle; offset: 3 15 3;"
-    shadow>
-  </a-entity>
+// AFRAME.registerComponent('xrextras-curved-mesh', curvedMeshComponent)
+// AFRAME.registerComponent('xrextras-override-image-targets', overrideImageTargetsComponent)
 
-  <a-light type="ambient" intensity="0.65"></a-light>
+// AFRAME.registerState({
+//   initialState: {
+//     targetName: 'amity_rot_side',
+//     targetGeometry: 'full',
+//   },
+// })
+// //////////////////////////////////// THREE.JS
 
-  <a-entity 
-    id="sandcastle"
-    gltf-model="#sandCastleModel"
-    xrextras-hold-drag 
-    xrextras-two-finger-rotate 
-    xrextras-pinch-scale 
-    scale="0.025 0.025 0.025"
-    shadow="cast: true">
-  </a-entity>
+// Copyright (c) 2020 8th Wall, Inc.
+//
+// app.js is the main entry point for your 8th Wall app. Code here will execute after head.html
+// is loaded, and before body.html is loaded.
 
-  <a-entity
-    id="ground"
-    class="cantap"
-    geometry="primitive: box"
-    material="shader: shadow; transparent: true; opacity: 0.4"
-    scale="1000 2 1000"
-    position="0 -1 0"
-    shadow="cast: false">
-  </a-entity>
-</a-scene>
+import {imageTargetPipelineModule} from './imagetarget'
+import {cylinderExamples} from './cylinder-examples.js'
+import {imageFramePipelineModule} from './imageframe.js'
 
-{
-  "name": "fuzzy",
-  "version": "0.1.1",
-  "homepage": "https://github.com/mattyork/fuzzy",
-  "authors": [
-    "Matt York <york.matt@gmail.com>"
-  ],
-  "description": "small, standalone fuzzy search / fuzzy filter like sublime text Cmd-P. browser or node.",
-  "main": "lib/fuzzy.js",
-  "keywords": [
-    "fuzzy",
-    "search",
-    "filter",
-    "sublime",
-    "sublime text"
-  ],
-  "license": "MIT",
-  "devDependencies": {
-    "mocha": ">= 1.3.0",
-    "chai": ">= 1.1.1",
-    "underscore": ">= 1.3.3",
-    "uglify-js": ">= 1.3.2",
-    "jshint": ">= 0.7.1"
-  },
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests",
-    "examples"
-  ]
+import './index.css'
+import * as camerafeedHtml from './camerafeed.html'
+
+// console.log('[INIT] window.innerWidth ', window.innerWidth, ' window.innerHeight ', window.innerHeight, ' document.documentElement.clientWidth ', document.documentElement.clientWidth, ' document.documentElement.clientHeight ', document.documentElement.clientHeight, 'document.body.clientWidth', document.body.clientWidth, 'document.body.clientHeight', document.body.clientHeight, ' window.devicePixelRatio ', window.devicePixelRatio)
+
+// window.addEventListener('xrloaded', (event) => {
+//   const c = document.getElementsByTagName('canvas').item(0)
+//   console.log('[xrloaded] window.innerWidth ', window.innerWidth, ' wnidow.innerHeight ', window.innerHeight, ' document.documentElement.clientWidth ', document.documentElement.clientWidth, ' document.documentElement.clientHeight ', document.documentElement.clientHeight, 'document.body.clientWidth', document.body.clientWidth, 'document.body.clientHeight', document.body.clientHeight, ' window.devicePixelRatio ', window.devicePixelRatio)
+//   console.log('[xrloaded] canvas.clientWidth:', c.clientWidth, ' canvas.clientHeight: ', c.clientHeight, ' canvas.width: ', c.width, ' canvas.height: ', c.height)
+
+// })
+
+// window.addEventListener('click', (event) => {
+//   const c = document.getElementsByTagName('canvas').item(0)
+//   console.log('[click] window.innerWidth ', window.innerWidth, ' window.innerHeight ', window.innerHeight, ' document.documentElement.clientWidth ', document.documentElement.clientWidth, ' document.documentElement.clientHeight ', document.documentElement.clientHeight, 'document.body.clientWidth', document.body.clientWidth, 'document.body.clientHeight', document.body.clientHeight, ' window.devicePixelRatio ', window.devicePixelRatio)
+//   console.log('[click] canvas.clientWidth:', c.clientWidth, ' canvas.clientHeight: ', c.clientHeight, ' canvas.width: ', c.width, ' canvas.height: ', c.height)
+// })
+
+const onxrloaded = () => {
+  // XRExtras.MediaRecorder.initRecordButton()  // Adds record button
+  // XRExtras.MediaRecorder.initMediaPreview()  // Adds media preview and share
+  // XRExtras.MediaRecorder.configure({
+  //   // watermarkImageUrl: require('./assets/Logos/8logo.png'), // Adds watermark to photo/video
+  //   // watermarkMaxWidth: 100,
+  //   // watermarkMaxHeight: 10,
+  // })
+
+  XR8.XrController.configure({disableWorldTracking: true, verbose: true})  // , imageTargets: ['tyrell', 'amity_target']}) //, imageTargets: ['blur-rotated'] })
+  XR8.addCameraPipelineModules([  // Add camera pipeline modules.
+    // Existing pipeline modules.
+    XR8.GlTextureRenderer.pipelineModule(),      // Draws the camera feed.
+    XR8.Threejs.pipelineModule(),                // Creates a ThreeJS AR Scene.
+    XR8.XrController.pipelineModule(),           // Enables SLAM tracking.
+    XRExtras.AlmostThere.pipelineModule(),       // Detects unsupported browsers and gives hints.
+    XRExtras.FullWindowCanvas.pipelineModule(),  // Modifies the canvas to fill the window.
+    XRExtras.Loading.pipelineModule(),           // Manages the loading screen on startup.
+    XRExtras.RuntimeError.pipelineModule(),      // Shows an error image on runtime error.
+    XRExtras.Stats.pipelineModule(),
+
+    // XR8.MediaRecorder.pipelineModule(),
+    XR8.CanvasScreenshot.pipelineModule(),
+    // Custom pipeline modules.
+    imageTargetPipelineModule(),  // Draws a frame around detected image targets.
+    // cylinderExamples(),
+    // imageFramePipelineModule(),  // Draws a frame around detected image targets.
+  ])
+
+  // Open the camera and start running the camera run loop.
+  document.body.insertAdjacentHTML('beforeend', camerafeedHtml)
+
+  XR8.run({
+    canvas: document.getElementById('camerafeed'),
+    verbose: true,
+    cameraConfig: {direction: XR8.XrConfig.camera().BACK},
+    allowedDevices: XR8.XrConfig.device().ANY,
+  })
 }
 
-# fuzzy [![Build Status](https://img.shields.io/travis/mattyork/fuzzy/master.svg)](https://travis-ci.org/mattyork/fuzzy) [![npm version](https://badge.fury.io/js/fuzzy.svg)](https://badge.fury.io/js/fuzzy)
+// Show loading screen before the full XR library has been loaded.
+XRExtras.Loading.showLoading({onxrloaded})
 
-1k standalone fuzzy search / fuzzy filter a la Sublime Text's command-p fuzzy file search. Works in both node and browser.
+/// ///////////////////////////////// AFRAME
 
-[![Example](http://i.imgur.com/obzCQq7.gif)](http://htmlpreview.github.io/?https://github.com/mattyork/fuzzy/blob/master/examples/disney.html)
+// // Copyright (c) 2019 8th Wall, Inc.
+// //
+// // app.js is the main entry point for your 8th Wall app. Code here will execute after head.html
+// // is loaded, and before body.html is loaded.
 
-Try it yourself: [Disney Character Search Example](http://htmlpreview.github.io/?https://github.com/mattyork/fuzzy/blob/master/examples/disney.html)
+// import curvedMeshComponent from './extras/curved-mesh'
+// import overrideImageTargetsComponent from './extras/override-image-targets'
 
-## Get it
+// AFRAME.registerComponent('xrextras-curved-mesh', curvedMeshComponent)
+// AFRAME.registerComponent('xrextras-override-image-targets', overrideImageTargetsComponent)
 
-Node:
+// AFRAME.registerState({
+//   initialState: {
+//     targetName: 'amity_rot_side',
+//     targetGeometry: 'full',
+//   },
+// })
+sdf
+test
+hello
 
-```bash
-$ npm install --save fuzzy
-$ node
-> var fuzzy = require('fuzzy');
-> console.log(fuzzy)
-{ test: [Function],
-  match: [Function],
-  filter: [Function] }
-```
 
-Browser:
+// //////////////////////////////////// THREE.JS
 
-```html
-<script src="/path/to/fuzzy.js"></script>
-<script>
-  console.log(fuzzy);
-  // Object >
-  //   filter: function (pattern, arr, opts) {
-  //   match: function (pattern, string, opts) {
-  //   test: function (pattern, string) {
-</script>
-```
+// Copyright (c) 2020 8th Wall, Inc.
+//
+// app.js is the main entry point for your 8th Wall app. Code here will execute after head.html
+// is loaded, and before body.html is loaded.
 
-## Use it
+import {imageTargetPipelineModule} from './imagetarget'
+import {cylinderExamples} from './cylinder-examples.js'
+import {imageFramePipelineModule} from './imageframe.js'
 
-Padawan: Simply filter an array of strings.
+import './index.css'
+import * as camerafeedHtml from './camerafeed.html'
 
-```javascript
-var list = ['baconing', 'narwhal', 'a mighty bear canoe'];
-var results = fuzzy.filter('bcn', list)
-var matches = results.map(function(el) { return el.string; });
-console.log(matches);
-// [ 'baconing', 'a mighty bear canoe' ]
-```
+// console.log('[INIT] window.innerWidth ', window.innerWidth, ' window.innerHeight ', window.innerHeight, ' document.documentElement.clientWidth ', document.documentElement.clientWidth, ' document.documentElement.clientHeight ', document.documentElement.clientHeight, 'document.body.clientWidth', document.body.clientWidth, 'document.body.clientHeight', document.body.clientHeight, ' window.devicePixelRatio ', window.devicePixelRatio)
 
-Jedi: Wrap matching characters in each string
+// window.addEventListener('xrloaded', (event) => {
+//   const c = document.getElementsByTagName('canvas').item(0)
+//   console.log('[xrloaded] window.innerWidth ', window.innerWidth, ' wnidow.innerHeight ', window.innerHeight, ' document.documentElement.clientWidth ', document.documentElement.clientWidth, ' document.documentElement.clientHeight ', document.documentElement.clientHeight, 'document.body.clientWidth', document.body.clientWidth, 'document.body.clientHeight', document.body.clientHeight, ' window.devicePixelRatio ', window.devicePixelRatio)
+//   console.log('[xrloaded] canvas.clientWidth:', c.clientWidth, ' canvas.clientHeight: ', c.clientHeight, ' canvas.width: ', c.width, ' canvas.height: ', c.height)
 
-```javascript
-var list = ['baconing', 'narwhal', 'a mighty bear canoe'];
-var options = { pre: '<', post: '>' };
-var results = fuzzy.filter('bcn', list, options)
-console.log(results);
-// [
-//   {string: '<b>a<c>o<n>ing'           , index: 0, score: 3, original: 'baconing'},
-//   {string: 'a mighty <b>ear <c>a<n>oe', index: 2, score: 3, original: 'a mighty bear canoe'}
-// ]
-```
+// })
 
-Jedi Master: sometimes the array you give is not an array of strings. You can
-pass in a function that creates the string to match against from each element
-in the given array
+// window.addEventListener('click', (event) => {
+//   const c = document.getElementsByTagName('canvas').item(0)
+//   console.log('[click] window.innerWidth ', window.innerWidth, ' window.innerHeight ', window.innerHeight, ' document.documentElement.clientWidth ', document.documentElement.clientWidth, ' document.documentElement.clientHeight ', document.documentElement.clientHeight, 'document.body.clientWidth', document.body.clientWidth, 'document.body.clientHeight', document.body.clientHeight, ' window.devicePixelRatio ', window.devicePixelRatio)
+//   console.log('[click] canvas.clientWidth:', c.clientWidth, ' canvas.clientHeight: ', c.clientHeight, ' canvas.width: ', c.width, ' canvas.height: ', c.height)
+// })
 
-```javascript
-var list = [
-    {rompalu: 'baconing', zibbity: 'simba'}
-  , {rompalu: 'narwhal' , zibbity: 'mufasa'}
-  , {rompalu: 'a mighty bear canoe', zibbity: 'saddam hussein'}
-];
-var options = {
-    pre: '<'
-  , post: '>'
-  , extract: function(el) { return el.rompalu; }
-};
-var results = fuzzy.filter('bcn', list, options);
-var matches = results.map(function(el) { return el.string; });
-console.log(matches);
-// [ '<b>a<c>o<n>ing', 'a mighty <b>ear <c>a<n>oe' ]
-```
+const onxrloaded = () => {
+  // XRExtras.MediaRecorder.initRecordButton()  // Adds record button
+  // XRExtras.MediaRecorder.initMediaPreview()  // Adds media preview and share
+  // XRExtras.MediaRecorder.configure({
+  //   // watermarkImageUrl: require('./assets/Logos/8logo.png'), // Adds watermark to photo/video
+  //   // watermarkMaxWidth: 100,
+  //   // watermarkMaxHeight: 10,
+  // })
 
-## Examples
-Check out the html files in the [examples](https://github.com/mattyork/fuzzy/tree/master/examples) directory.
+  XR8.XrController.configure({disableWorldTracking: true, verbose: true})  // , imageTargets: ['tyrell', 'amity_target']}) //, imageTargets: ['blur-rotated'] })
+  XR8.addCameraPipelineModules([  // Add camera pipeline modules.
+    // Existing pipeline modules.
+    XR8.GlTextureRenderer.pipelineModule(),      // Draws the camera feed.
+    XR8.Threejs.pipelineModule(),                // Creates a ThreeJS AR Scene.
+    XR8.XrController.pipelineModule(),           // Enables SLAM tracking.
+    XRExtras.AlmostThere.pipelineModule(),       // Detects unsupported browsers and gives hints.
+    XRExtras.FullWindowCanvas.pipelineModule(),  // Modifies the canvas to fill the window.
+    XRExtras.Loading.pipelineModule(),           // Manages the loading screen on startup.
+    XRExtras.RuntimeError.pipelineModule(),      // Shows an error image on runtime error.
+    XRExtras.Stats.pipelineModule(),
+    // XR8.MediaRecorder.pipelineModule(),
+    XR8.CanvasScreenshot.pipelineModule(),
+    // Custom pipeline modules.
+    imageTargetPipelineModule(),  // Draws a frame around detected image targets.
+    // cylinderExamples(),
+    // imageFramePipelineModule(),  // Draws a frame around detected image targets.
+  ])
 
-Try the examples live: 
-- [disney](http://htmlpreview.github.io/?https://github.com/mattyork/fuzzy/blob/master/examples/disney.html)
-- [wikipedia](http://htmlpreview.github.io/?https://github.com/mattyork/fuzzy/blob/master/examples/wikipedia.html)
-## Documentation
-[Code is well documented](https://github.com/mattyork/fuzzy/blob/master/lib/fuzzy.js) and the [unit tests](https://github.com/mattyork/fuzzy/blob/master/test/fuzzy.test.js) cover all functionality
+  // Open the camera and start running the camera run loop.
+  document.body.insertAdjacentHTML('beforeend', camerafeedHtml)
 
-## Contributing
-Fork the repo!
+  XR8.run({
+    canvas: document.getElementById('camerafeed'),
+    verbose: true,
+    cameraConfig: {direction: XR8.XrConfig.camera().BACK},
+    allowedDevices: XR8.XrConfig.device().ANY,
+  })
+}
 
-    git clone <your_fork>
-    cd fuzzy
-    npm install
-    make
+// Show loading screen before the full XR library has been loaded.
+XRExtras.Loading.showLoading({onxrloaded})
 
-Add unit tests for any new or changed functionality. Lint, test, and minify using make, then shoot me a pull request.
+// Copyright (c) 2018 8th Wall, Inc.
+const imageFramePipelineModule = () => {
+  const LIGHT_PURPLE = 0xAD50FF
+  const CHERRY = 0xDD0065
+  const MINT = 0x00EDAF
+  const MANGO = 0xFFC828
+  const GRAY = 0x8083A2
+  const DARK_GRAY = 0x464766
 
-## Release History
-v0.1.0 - July 25, 2012
+  const allFrames = {}
+  let scene
 
-* Initial Release
+  // Renders one side of a picture frame rectangle.
+  const frameEdge = (x, y, w1, h1, w2, h2) => {
+    const edge = new THREE.Group()
+    const big = new THREE.Mesh(new THREE.CubeGeometry(w1, h1, 0.008),
+      new THREE.MeshBasicMaterial({color: DARK_GRAY}))
+    big.position.set(x, y, 0)
+    const small = new THREE.Mesh(new THREE.CubeGeometry(w2, h2, 0.012),
+      new THREE.MeshBasicMaterial({color: GRAY}))
+    small.position.set(x, y, 0)
+    edge.add(big)
+    edge.add(small)
+    return edge
+  }
 
-v0.1.1 - September 19, 2015
+  // Renders a picture frame rectangle.
+  const frameBorder = (scaledWidth, scaledHeight) => {
+    const border = new THREE.Group()
+    border.add(frameEdge(-scaledWidth / 2, 0, 0.05, scaledHeight + 0.05, 0.03, scaledHeight + 0.03))
+    border.add(frameEdge(scaledWidth / 2, 0, 0.05, scaledHeight + 0.05, 0.03, scaledHeight + 0.03))
+    border.add(frameEdge(0, -scaledHeight / 2, scaledWidth + 0.05, 0.05, scaledWidth + 0.03, 0.03))
+    border.add(frameEdge(0, scaledHeight / 2, scaledWidth + 0.05, 0.05, scaledWidth + 0.03, 0.03))
+    return border
+  }
 
-* Fix broken links in package.json
-* Fix examples
+  // Adds a tinted-glass effect.
+  const framePane = (scaledWidth, scaledHeight) => {
+    const material = new THREE.MeshBasicMaterial({color: LIGHT_PURPLE})
+    material.alphaMap = new THREE.DataTexture(new Uint8Array([0, 127, 0]), 1, 1, THREE.RGBFormat)
+    material.alphaMap.needsUpdate = true
+    material.transparent = true
+    return new THREE.Mesh(new THREE.CubeGeometry(scaledWidth, scaledHeight, 0.001), material)
+  }
 
-v0.1.2 - September 25, 2016
+  // Adds an oriented axis.
+  const axis = () => {
+    const axes = new THREE.Group()
+    const axisLength = 0.2
+    const cylinder = new THREE.CylinderBufferGeometry(0.01, 0.01, axisLength, 32)
+    const xAxis = new THREE.Mesh(cylinder, new THREE.MeshBasicMaterial({color: MANGO}))
+    const yAxis = new THREE.Mesh(cylinder, new THREE.MeshBasicMaterial({color: CHERRY}))
+    const zAxis = new THREE.Mesh(cylinder, new THREE.MeshBasicMaterial({color: MINT}))
+    xAxis.rotateZ(Math.PI / 2)
+    xAxis.position.set(axisLength / 2, 0, 0)
+    yAxis.position.set(0, axisLength / 2, 0)
+    zAxis.rotateX(Math.PI / 2)
+    zAxis.position.set(0, 0, axisLength / 2)
+    axes.add(xAxis)
+    axes.add(yAxis)
+    axes.add(zAxis)
+    return axes
+  }
 
-* Exact matches get the highest score. #15
-* Add TypeScript typings #21
-* Better error handling for invalid input #13
-* Smaller bower install footprint #22
+  // Constructs a picture frame out of threejs primitives.
+  const buildPrimitiveFrame = ({scaledWidth, scaledHeight}) => {
+    const frame = new THREE.Group()
+    frame.add(frameBorder(scaledWidth, scaledHeight))
+    frame.add(framePane(scaledWidth, scaledHeight))
+    frame.add(axis())
+    scene.add(frame)
+    return frame
+  }
+  
+  const logEvent = ({name, detail}) => {
+    // console.log(`Handling event ${name}, got detail, ${JSON.stringify(detail)}`)
+  }
 
-v0.1.3 - October 1, 2016
+  // Updates the position of a picture frame that covers an image target.
+  const showImageFrame = ({detail}) => {
+    let frame = allFrames[detail.name]
+    if (!frame) {
+      frame = buildPrimitiveFrame(detail)
+      allFrames[detail.name] = frame
+    }
+    frame.position.copy(detail.position)
+    frame.quaternion.copy(detail.rotation)
+    frame.scale.set(detail.scale, detail.scale, detail.scale)
+    frame.visible = true
+  }
 
-* Fix blocking bug in React Native #27
+  // Hides the image frame when the target is no longer detected.
+  const hideImageFrame = ({detail}) => {
+    allFrames[detail.name].visible = false
+  }
 
-## License
-Copyright (c) 2015 Matt York
-Licensed under the MIT license.
+  // Grab a handle to the threejs scene and set the camera position on pipeline startup.
+  const onAttach = ({canvasWidth, canvasHeight}) => {
+    // Get the 3js sceen from xr3js.
+    const {camera} = XR8.Threejs.xrScene()
+    scene = XR8.Threejs.xrScene().scene
 
-## TODO
+    // Set the initial camera position relative to the scene we just laid out. This must be at a
+    // height greater than y=0.
+    camera.position.set(0, 3, 0)
 
-1. Search improvement: behave a bit more like sublime text by getting
-   the BEST match in a given string, not just the first. For example,
-   searching for 'bass' in 'bodacious bass' should match against 'bass',
-   but it currently matches like so: `<b>od<a>ciou<s> ba<s>s`. There is
-   a test already written, just need to implement it. Naive O(n^2) worst
-   case: find every match in the string, then select the highest scoring
-   match. Should benchmark this against current implementation once implemented
-   Also, "reactive rice" would be `<r><e>active r<i><c>e`
-2. Search feature: Work on multiple strings in a match. For example, be able
-   to match against 'stth' against an object { folder: 'stuff', file: 'thing' }
-3. Async batch updates so the UI doesn't block for huge sets. Or maybe Web Workers?
-4. Performance performance performance!
+    // Sync the xr controller's 6DoF position and camera paremeters with our scene.
+    XR8.XrController.updateCameraProjectionMatrix({
+      origin: camera.position,
+      facing: camera.quaternion,
+    })
+  }
+
+  return {
+    // Camera pipeline modules need a name. It can be whatever you want but must be unique within
+    // your app.
+    name: 'targetframes',
+
+    // onStart is called once when the camera feed begins. In this case, we need to wait for the
+    // XR8.Threejs scene to be ready before we can access it to add content. It was created in
+    // XR8.Threejs.pipelineModule()'s onStart method.
+    // onStart,
+    onAttach,
+
+    // Listeners are called right after the processing stage that fired them. This guarantees that
+    // updates can be applied at an appropriate synchronized point in the rendering cycle.
+    listeners: [
+      {event: 'reality.imagescanning', process: logEvent },
+      {event: 'reality.imageloading', process: logEvent },
+      {event: 'reality.imagefound', process: showImageFrame},
+      {event: 'reality.imagefound', process: logEvent },
+      {event: 'reality.imageupdated', process: showImageFrame},
+      {event: 'reality.imageupdated', process: logEvent},
+      {event: 'reality.imagelost', process: hideImageFrame},
+      {event: 'reality.imagelost', process: logEvent},
+      {event: 'reality.imageremoved', process: logEvent},
+    
+    ],
+  }
+}
+
+export {imageFramePipelineModule}
+
+const imageTargetPipelineModule = () => {
+  const modelFile = require('./assets/jellyfish-model.glb')
+  const modelFile2 = require('./assets/tree.glb')
+  const videoFile = require('./assets/jellyfish-video.mp4')
+
+  const loader = new THREE.GLTFLoader()  // This comes from GLTFLoader.js.
+  const raycaster = new THREE.Raycaster()
+  const tapPosition = new THREE.Vector2()
+
+  let model2
+  let model
+  let video, videoObj
+
+  // Populates some object into an XR scene and sets the initial camera position. The scene and
+  // camera come from xr3js, and are only available in the camera loop lifecycle onStart() or later.
+  const initXrScene = ({scene, camera}) => {
+    console.log('initXrScene')
+
+    // create the video element
+    video = document.createElement('video')
+    video.src = videoFile
+    video.setAttribute('preload', 'auto')
+    video.setAttribute('loop', '')
+    video.setAttribute('muted', '')
+    video.setAttribute('playsinline', '')
+    video.setAttribute('webkit-playsinline', '')
+
+    const texture = new THREE.VideoTexture(video)
+    texture.minFilter = THREE.LinearFilter
+    texture.magFilter = THREE.LinearFilter
+    texture.format = THREE.RGBFormat
+    texture.crossOrigin = 'anonymous'
+
+    videoObj = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.75, 1),
+      new THREE.MeshBasicMaterial({map: texture})
+    )
+    // Hide video until image target is detected.
+    videoObj.visible = false
+    scene.add(videoObj)
+    video.load()
+
+    // Load 3D model
+    loader.load(
+      // resource URL
+      modelFile,
+      // loaded handler
+      (gltf) => {
+        model = gltf.scene
+        scene.add(model)
+        // Hide 3D model until image target is detected.
+        model.visible = false
+      },
+      // progress handler
+      (xhr) => { console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`) },
+      // error handler
+      (error) => {console.log('Error loading .glb model:', error)}
+    )
+    
+    // Load 3D model
+    loader.load(
+      // resource URL
+      modelFile2,
+      // loaded handler
+      (gltf) => {
+        model2 = gltf.scene
+        scene.add(model2)
+        // Hide 3D model until image target is detected.
+        model2.visible = false
+      },
+      // progress handler
+      (xhr) => { console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`) },
+      // error handler
+      (error) => {console.log('Error loading .glb model:', error)}
+    )
+
+    // Add soft white light to the scene.
+    // This light cannot be used to cast shadows as it does not have a direction.
+    scene.add(new THREE.AmbientLight(0x404040, 5))
+
+    // Set the initial camera position relative to the scene we just laid out. This must be at a
+    // height greater than y=0.
+    camera.position.set(0, 3, 0)
+  }
+
+  // Places content over image target
+  const showTarget = ({detail}) => {
+    // When the image target named 'model-target' is detected, show 3D model.
+    // This string must match the name of the image target uploaded to 8th Wall.
+    
+    console.log(detail)
+    
+    // When the image target named 'video-target' is detected, play video.
+    // This string must match the name of the image target uploaded to 8th Wall.
+    if (detail.name === 'video-target') {
+      videoObj.position.copy(detail.position)
+      videoObj.quaternion.copy(detail.rotation)
+      videoObj.scale.set(detail.scale, detail.scale, detail.scale)
+      videoObj.visible = true
+      video.play()
+    }
+    else if (detail.name === 'toystory_up') {
+      model2.position.copy(detail.position)
+      model2.quaternion.copy(detail.rotation)
+      model2.scale.set(detail.scale, detail.scale, detail.scale)
+      model2.visible = true
+    }
+    else {
+      model.position.copy(detail.position)
+      model.quaternion.copy(detail.rotation)
+      model.scale.set(detail.scale * 0.5, detail.scale  * 0.5, detail.scale * 0.5)
+      model.visible = true
+    }
+  }
+
+  // Hides the image frame when the target is no longer detected.
+  const hideTarget = ({detail}) => {
+     if (detail.name === 'video-target') {
+      video.pause()
+      videoObj.visible = false
+    }
+    else {
+      model.visible = false
+      model2.visible = false
+    }
+
+  }
+
+  // Grab a handle to the threejs scene and set the camera position on pipeline startup.
+  const onStart = ({canvas}) => {
+    const {scene, camera} = XR8.Threejs.xrScene()  // Get the 3js scene from XR
+
+    initXrScene({scene, camera}) // Add content to the scene and set starting camera position.
+    
+    // prevent scroll/pinch gestures on canvas
+    canvas.addEventListener('touchmove', function (event) { event.preventDefault() }) 
+
+    // Sync the xr controller's 6DoF position and camera paremeters with our scene.
+    XR8.XrController.updateCameraProjectionMatrix({
+      origin: camera.position,
+      facing: camera.quaternion,
+    })
+  }
+
+  return {
+    // Camera pipeline modules need a name. It can be whatever you want but must be
+    // unique within your app.
+    name: 'threejs-flyer',
+
+    // onStart is called once when the camera feed begins. In this case, we need to wait for the
+    // XR8.Threejs scene to be ready before we can access it to add content. It was created in
+    // XR8.Threejs.pipelineModule()'s onStart method.
+    onStart,
+
+    // Listeners are called right after the processing stage that fired them. This guarantees that
+    // updates can be applied at an appropriate synchronized point in the rendering cycle.
+    listeners: [
+      {event: 'reality.imagefound', process: showTarget},
+      {event: 'reality.imageupdated', process: showTarget},
+      {event: 'reality.imagelost', process: hideTarget},
+    ],
+  }
+}
+
+export {imageTargetPipelineModule}

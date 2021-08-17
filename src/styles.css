@@ -3,6 +3,27 @@
   text-align: center;
 }
 
+button {
+  position: absolute;
+  right: 20px;
+}
+
+#doc1Button {
+  top: 10px;
+}
+
+#doc2Button {
+  top: 40px;
+}
+
+#doc12Button {
+  top: 70px;
+}
+
+#stats {
+  position: absolute;
+  bottom: 0px;
+}
 body {
   padding: 0;
   margin: 0 10px;

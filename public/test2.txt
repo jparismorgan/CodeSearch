@@ -19,7 +19,7 @@
   <p class="author">By Scott A Lister</p>
   
   <!-- time stamp -->
-  <p id="date"><br></p>
+  <p id="<mark>d</mark>ate"><br></p>
   
   <p>
   In a volcanic eruption, lava, volcanic bombs and ash, and various gases are expelled from a 

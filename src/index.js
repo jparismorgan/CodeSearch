@@ -13,8 +13,36 @@ import Mark from 'mark.js'
 import './styles.css'
 import data from './movies.js'
 
+const now =
+  window.performance && performance.now ? () => performance.now() : Date.now()
+
+let dirty = true
+
 async function getFile(fileUrl) {
   return fetch(fileUrl).then((r) => r.text())
+}
+
+const Statistics = () => {
+  let index_ = 0
+  let sum_ = 0
+  let then_ = now()
+
+  return {
+    start: () => {
+      then_ = now()
+    },
+    finish: () => {
+      sum_ += now() - then_
+      ++index_
+    },
+    average: () => (index_ === 0 ? 0 : sum_ / index_)
+  }
+}
+
+const stats = {
+  initialIndex: Statistics(),
+  subsequentIndexing: Statistics(),
+  search: Statistics()
 }
 
 async function main() {
@@ -25,18 +53,26 @@ async function main() {
 
   // const div1 = document.getElementById('file1')
   // div1.textContent = file1
-
+  stats.initialIndex.start()
   const index = new FlexSearch.Index({
     // charset: 'latin:advanced',
     tokenize: 'full',
-    cache: true,
-    resolution: 9, // 9 is default
-    context: true,
+    cache: 100,
+    threshold: 10,
+    resolution: 20, // 9 is default
+    depth: 0,
+    // context: {
+    //   depth: 2,
+    //   resolution: 5,
+    //   bidirectional: true,
+    // },
+    context: false,
     // the default encoder removes special characters. define a new encoder that just splits on spaces.
     // https://github.com/nextapps-de/flexsearch/issues/197
     // https://github.com/nextapps-de/flexsearch/issues/145
     encode: function (str) {
-      return str.split(/\s+/g)
+      // return str.split(/\s+/g)
+      return str //.toLowerCase()
     }
   })
   const fileNameToContent = {}
@@ -57,9 +93,12 @@ async function main() {
     content.split('\n').forEach((line) => {
       const tagId = `${tag}-${id++}`
       tagIdToLine[tagId] = line
+      // console.log(tagId, line)
       index.add(tagId, line)
     })
   })
+  stats.initialIndex.finish()
+  dirty = true
 
   var suggestions = document.getElementById('suggestions')
   var autocomplete = document.getElementById('autocomplete')
@@ -153,6 +192,7 @@ async function main() {
       }
     })
     console.log(ret)
+    dirty = true
     return ret
 
     // for a node component
@@ -173,7 +213,10 @@ async function main() {
   function show_results() {
     console.log('[show_results] value: ', this.value)
     var value = this.value
-    var results = index.search(value, { suggest: true, limit: 10 })
+    stats.search.start()
+    var results = index.search(value, { suggest: false, limit: 10 })
+    console.log(results)
+    stats.search.finish()
     var entry = null
     var childs = suggestions.childNodes
     var i = 0
@@ -221,6 +264,7 @@ async function main() {
     } else {
       autocomplete.value = autocomplete.current = value
     }
+    dirty = true
   }
 
   function accept_autocomplete(event) {
@@ -243,3 +287,143 @@ async function main() {
 }
 
 main()
+
+//--------------------------------------------------------------------------------------------------
+// Run performance benchmark
+//--------------------------------------------------------------------------------------------------
+function render() {
+  if (dirty === false) {
+    requestAnimationFrame(render)
+    return
+  }
+  dirty = false
+  // Update stats.
+  document.querySelector(
+    'pre'
+  ).innerHTML = `initialIndex:  ${stats.initialIndex.average().toFixed(3)} ms
+subsequentIndexing:  ${stats.subsequentIndexing.average().toFixed(3)} ms
+search:  ${stats.search.average().toFixed(3)} ms`
+  requestAnimationFrame(render)
+}
+render()
+
+//--------------------------------------------------------------------------------------------------
+// Code to highlight search query
+//--------------------------------------------------------------------------------------------------
+
+// import React from 'react'
+// import { Dropdown, Header } from 'semantic-ui-react'
+
+// // A
+// // first get positions to start and end marks
+// // then convert string to non-html
+// // then add in start and end marks
+
+// // B
+// // first convert string to non-html
+// // convert search term to non-html
+// // replace all with <mark>search term non html</mark>
+// // console.log(safeLine)
+// // console.log(safeSearchValue)
+// // const newLine = safeLine.replace(
+// //   safeSearchValue,
+// //   `<mark>${safeSearchValue}</mark>`
+// // )
+
+// const safeHtmlString = (s) => {
+//   return String(s)
+//     .replace(/&/g, '&amp;')
+//     .replace(/</g, '&lt;')
+//     .replace(/>/g, '&gt;')
+//     .replace(/"/g, '&quot;')
+// }
+
+// const highlightLine = (line, searchValue) => {
+//   // A
+//   searchValue = ''
+//   line = 'test sentence test hello'
+//   // ".*(?i)"+s2+".*"
+//   // boolean found = s1.matches("(?i).*" + s2+ ".*");
+//   // var patt = /${searchValue}/igm;
+//   const isCaseSensitive = true
+//   var modifiers = isCaseSensitive ? 'gi' : 'g'
+//   var patt = new RegExp(searchValue, modifiers)
+//   const res = []
+//   let match
+//   let end = 0
+//   // eslint-disable-next-line no-cond-assign
+//   while ((match = patt.exec(line))) {
+//     console.log(match.index + ' ' + patt.lastIndex)
+//     console.log(line.substring(end, match.index))
+//     console.log(line.substring(match.index, patt.lastIndex))
+//     res.push(
+//       <span>
+//         {line.substring(end, match.index)}
+//         {<mark>{line.substring(match.index, patt.lastIndex)}</mark>}
+//       </span>
+//     )
+//     end = patt.lastIndex
+//   }
+//   res.push(
+//     <span>
+//       {line.substring(end, line.length)}
+//     </span>
+//   )
+
+//   return res
+
+//   // Works but case sensitive
+//   // const safeLine = line // safeHtmlString(line)
+//   // const safeSearchValue = searchValue //safeHtmlString(searchValue)
+//   // const split = safeLine.split(safeSearchValue)
+//   // let i = 1
+//   // return split.map((s) => {
+//   //   return (
+//   //     <span>
+//   //       {s}
+//   //       {i++ < split.length ? <mark>{safeSearchValue}</mark> : ''}
+//   //     </span>
+//   //   )
+//   // })
+// }
+
+// const c =
+//   "<Header icon='mobile' content='Mobile' subheader='The smallest size' />"
+// const d = 'test'
+// // const a = <Header icon='mobile' content={d} subheader='The <br>smallest</br> size' />
+// const a = React.createElement('li', { id: 'li1' }, 'one')
+
+// const options = [
+//   {
+//     key: 1,
+//     text: <div>{highlightLine('Test sentence test hello', 'tEst')}</div>,
+//     value: 1,
+//     content: <Header icon="mobile" content={d} subheader="The smallest size" />
+//   },
+//   {
+//     key: 2,
+//     text: 'Tablet',
+//     value: 2,
+//     content: (
+//       <Header
+//         icon="tablet"
+//         content="Tablet"
+//         subheader="The size in the middle"
+//       />
+//     )
+//   },
+//   {
+//     key: 3,
+//     text: 'Desktop',
+//     value: 3,
+//     content: (
+//       <Header icon="desktop" content="Desktop" subheader="The largest size" />
+//     )
+//   }
+// ]
+
+// const DropdownExampleItemContent = () => (
+//   <Dropdown selection fluid options={options} placeholder="Choose an option" />
+// )
+
+// export default DropdownExampleItemContent
